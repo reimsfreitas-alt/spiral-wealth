@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const WHATSAPP_URL =
-  "https://wa.me/553199409045?text=Quero%20entrar%20no%20Spiral%20Wealth";
+  "https://wa.me/553199409045?text=Quero%20entrar%20no%20Spiral%20Wealth%20Founding%20Circle";
 
 const GoldBtn = ({ children, onClick }) => (
   <button
@@ -106,30 +106,40 @@ function Home({ goSpiral }) {
 
         <p
           style={{
-            color: "rgba(232,213,163,0.72)",
+            color: "rgba(232,213,163,0.78)",
             lineHeight: 1.7,
             marginBottom: "12px",
-            letterSpacing: "0.06em",
+            letterSpacing: "0.05em",
+            fontSize: "1rem",
           }}
         >
-          Master Your Mind.
-          <br />
-          Multiply Your Wealth.
+          Become a Founding Member
         </p>
 
         <p
           style={{
-            color: "rgba(212,175,112,0.55)",
-            fontSize: "0.8rem",
+            color: "rgba(212,175,112,0.58)",
+            fontSize: "0.82rem",
+            marginBottom: "12px",
+            lineHeight: 1.7,
+          }}
+        >
+          Secure lifetime founder status before public launch.
+        </p>
+
+        <p
+          style={{
+            color: "#e8d5a3",
+            fontSize: "0.82rem",
             marginBottom: "26px",
           }}
         >
-          Private founding access now open.
+          Only first 25 founder spots available.
         </p>
 
         <div style={{ display: "grid", gap: "12px" }}>
           <GoldBtn onClick={() => window.open(WHATSAPP_URL, "_blank")}>
-            Join Founding Circle
+            Join Founding Circle – R$97
           </GoldBtn>
 
           <OutlineBtn onClick={goSpiral}>
@@ -144,7 +154,7 @@ function Home({ goSpiral }) {
             fontSize: "0.72rem",
           }}
         >
-          Free · 60 Seconds · No Signup
+          Private Access · Founder Benefits · Limited Spots
         </p>
       </div>
     </div>
@@ -229,7 +239,7 @@ function SpiralMinute({ goHome }) {
 
         <GoldBtn onClick={next}>
           {step === steps.length - 1
-            ? "Join Founding Circle"
+            ? "Join Founding Circle – R$97"
             : "Continue"}
         </GoldBtn>
       </div>
