@@ -189,7 +189,7 @@ const SpiralMinute = ({ onBack }) => {
           {isLast ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "0.9rem" }}>
               <GoldBtn onClick={() => { setStep(0); }}>Begin Again</GoldBtn>
-              <OutlineBtn onClick={() => window.open(WHATSAPP_URL, "_blank")}>Join Early Access</OutlineBtn>
+              <OutlineBtn onClick={() => window.open(WHATSAPP_URL = "https://3199409045?text=I%20want%20early%20access%20to%20Spiral%20Wealth", "_blank")}>Join Early Access</OutlineBtn>
             </div>
           ) : (
             <GoldBtn onClick={() => setStep(s => s + 1)}>
