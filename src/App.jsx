@@ -269,7 +269,7 @@ export default function App() {
 
         {/* Buttons */}
         <div style={{ ...enter(0.92), width: "100%", display: "flex", flexDirection: "column", gap: "0.95rem" }}>
-          <GoldBtn onClick={() => window.open(WHATSAPP_URL, "_blank")}>
+          <GoldBtn onClick={() => window.open("https://wa.me/55SEUNUMEROAQUI?text=Quero%20entrar%20no%20Spiral%20Wealth", "_blank")}>
             Join Early Access
           </GoldBtn>
           <OutlineBtn onClick={() => setScreen("spiral-minute")}>
