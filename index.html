@@ -1,13 +1,678 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>spiral-wealth</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#080809">
+<title>Spiral Minute · Método Espiral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    background: #080809;
+    color: #e8d5a3;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    pointer-events: none;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    padding: 32px 24px;
+  }
+
+  .screen.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* HEADER */
+  .header {
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 10;
+  }
+
+  .header-mark {
+    color: #d4af70;
+    letter-spacing: 0.4em;
+    font-size: 0.62rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  /* SÍMBOLO ESPIRAL */
+  .symbol {
+    font-size: 64px;
+    color: #d4af70;
+    margin-bottom: 24px;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .symbol.breathing {
+    animation: breathe 8s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(0.85); opacity: 0.6; }
+    50% { transform: scale(1.15); opacity: 1; }
+  }
+
+  /* TIPOGRAFIA */
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 2.2rem;
+    letter-spacing: 0.08em;
+    color: #e8d5a3;
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 1.4rem;
+    color: #d4af70;
+    margin-bottom: 32px;
+    letter-spacing: 0.04em;
+  }
+
+  .lead {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 1.3rem;
+    line-height: 1.55;
+    color: rgba(232, 213, 163, 0.92);
+    margin-bottom: 32px;
+    max-width: 340px;
+    letter-spacing: 0.01em;
+  }
+
+  .caption {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(212, 175, 112, 0.6);
+    margin-bottom: 20px;
+  }
+
+  /* BOTÕES */
+  .btn {
+    width: 100%;
+    max-width: 320px;
+    padding: 16px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.4s ease;
+    border: none;
+    margin-bottom: 12px;
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #b8964f 0%, #e8d5a3 50%, #b8964f 100%);
+    color: #080809;
+    box-shadow: 0 0 24px rgba(212, 175, 112, 0.15);
+  }
+
+  .btn-gold:active {
+    transform: translateY(1px);
+    box-shadow: 0 0 12px rgba(212, 175, 112, 0.25);
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid rgba(212, 175, 112, 0.4);
+    color: #d4af70;
+  }
+
+  .btn-outline:active {
+    border-color: rgba(212, 175, 112, 0.8);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: none;
+    color: rgba(212, 175, 112, 0.5);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 12px;
+    margin-top: 8px;
+  }
+
+  /* GRID DE ESTADOS */
+  .states-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 320px;
+    margin-top: 8px;
+  }
+
+  .state-btn {
+    padding: 18px 12px;
+    background: transparent;
+    border: 1px solid rgba(212, 175, 112, 0.25);
+    color: #e8d5a3;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .state-btn:active,
+  .state-btn:hover {
+    border-color: rgba(212, 175, 112, 0.7);
+    background: rgba(212, 175, 112, 0.04);
+  }
+
+  .state-btn.full-width {
+    grid-column: 1 / -1;
+  }
+
+  /* TEXTO DE RESPIRAÇÃO */
+  .breath-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.5rem;
+    color: rgba(212, 175, 112, 0.85);
+    margin-top: 16px;
+    letter-spacing: 0.05em;
+    min-height: 1.8rem;
+    transition: opacity 0.8s ease;
+  }
+
+  /* INPUT */
+  .input-field {
+    width: 100%;
+    max-width: 320px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(212, 175, 112, 0.3);
+    color: #e8d5a3;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    padding: 12px 4px;
+    text-align: center;
+    outline: none;
+    margin-bottom: 28px;
+  }
+
+  .input-field:focus {
+    border-bottom-color: rgba(212, 175, 112, 0.7);
+  }
+
+  .input-field::placeholder {
+    color: rgba(212, 175, 112, 0.3);
+    font-style: italic;
+  }
+
+  /* QUOTE / FRASE CURADA */
+  .curated-phrase {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 1.45rem;
+    line-height: 1.6;
+    color: #e8d5a3;
+    max-width: 340px;
+    margin: 24px 0 36px;
+    letter-spacing: 0.01em;
+    font-style: italic;
+  }
+
+  /* DOTS DE PROGRESSO */
+  .progress-dots {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 5;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(212, 175, 112, 0.2);
+    transition: all 0.4s ease;
+  }
+
+  .dot.active {
+    background: #d4af70;
+    transform: scale(1.3);
+  }
+
+  .dot.completed {
+    background: rgba(212, 175, 112, 0.5);
+  }
+
+  /* FOOTER FOUNDER (tela final) */
+  .founder-block {
+    margin-top: 8px;
+    padding: 20px;
+    border-top: 1px solid rgba(212, 175, 112, 0.15);
+  }
+
+  .founder-eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: #d4af70;
+    margin-bottom: 12px;
+  }
+
+  .founder-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: rgba(232, 213, 163, 0.75);
+    margin-bottom: 20px;
+  }
+
+  /* FADE-IN ANIMAÇÃO */
+  .fade-in {
+    animation: fadeIn 1.4s ease both;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* RESPONSIVE TWEAKS */
+  @media (max-height: 700px) {
+    h1 { font-size: 1.9rem; }
+    .lead { font-size: 1.15rem; }
+    .curated-phrase { font-size: 1.25rem; }
+    .symbol { font-size: 52px; margin-bottom: 18px; }
+  }
+
+  @media (max-width: 360px) {
+    .app { padding: 24px 18px; }
+    h1 { font-size: 1.8rem; }
+    .lead { font-size: 1.1rem; }
+    .curated-phrase { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEADER FIXO -->
+  <div class="header">
+    <div class="header-mark">◈ Método Espiral ◈</div>
+  </div>
+
+  <!-- TELA 0 — ENTRADA -->
+  <div class="screen active" id="screen-0">
+    <div class="symbol">◎</div>
+    <h1>Spiral Minute</h1>
+    <h2>um minuto de clareza</h2>
+    <p class="lead">
+      Talvez você esteja precisando de menos resposta<br>e mais espaço pra ouvir o que já tá aí.
+    </p>
+    <button class="btn btn-gold" onclick="goToScreen(1)">Começar</button>
+    <button class="btn-ghost" onclick="goToScreen(5)">Já sou founder</button>
+  </div>
+
+  <!-- TELA 1 — PAUSA / RESPIRAÇÃO -->
+  <div class="screen" id="screen-1">
+    <div class="caption">Pausa</div>
+    <div class="symbol breathing" id="breathSymbol">◎</div>
+    <p class="breath-text" id="breathText">Inspira...</p>
+    <div style="margin-top: 40px;">
+      <button class="btn btn-outline" id="breathContinue" style="opacity: 0; pointer-events: none; transition: opacity 1s ease;" onclick="goToScreen(2)">Continuar</button>
+    </div>
+  </div>
+
+  <!-- TELA 2 — NOMEAR ESTADO -->
+  <div class="screen" id="screen-2">
+    <div class="caption">Como você chega aqui agora</div>
+    <p class="lead" style="margin-bottom: 24px;">Escolhe o que mais se aproxima.<br>Não precisa ser preciso.</p>
+    <div class="states-grid">
+      <button class="state-btn" onclick="selectState('cansado')">cansado</button>
+      <button class="state-btn" onclick="selectState('ansioso')">ansioso</button>
+      <button class="state-btn" onclick="selectState('disperso')">disperso</button>
+      <button class="state-btn" onclick="selectState('sobrecarregado')">sobrecarregado</button>
+      <button class="state-btn full-width" onclick="selectState('calmo')">calmo</button>
+    </div>
+  </div>
+
+  <!-- TELA 3 — RECONHECER (FRASE CURADA) -->
+  <div class="screen" id="screen-3">
+    <div class="caption" id="stateCaption">cansado</div>
+    <div class="symbol">◎</div>
+    <p class="curated-phrase fade-in" id="curatedPhrase">—</p>
+    <button class="btn btn-outline" onclick="goToScreen(4)">Seguir</button>
+    <button class="btn-ghost" onclick="newPhrase()">Outra frase</button>
+  </div>
+
+  <!-- TELA 4 — DIREÇÃO PRÓPRIA -->
+  <div class="screen" id="screen-4">
+    <div class="caption">Direção</div>
+    <h1 style="font-size: 1.6rem; margin-bottom: 8px;">Uma coisa só.</h1>
+    <p class="lead" style="font-size: 1.15rem;">
+      O que você consegue fazer hoje<br>que te aproxima um milímetro?
+    </p>
+    <input type="text" class="input-field" id="actionInput" placeholder="ex: ver o saldo sem julgar" maxlength="80">
+    <button class="btn btn-gold" onclick="completeSession()">Encerrar Sessão</button>
+    <button class="btn-ghost" onclick="completeSession(true)">Encerrar em silêncio</button>
+  </div>
+
+  <!-- TELA 5 — ENCERRAMENTO + FOUNDER CTA -->
+  <div class="screen" id="screen-5">
+    <div class="symbol">◎</div>
+    <h1 style="font-size: 1.8rem;">Você chegou aqui.</h1>
+    <h2>Não precisa fazer nada agora.<br>Já tá fazendo.</h2>
+
+    <div id="streakDisplay" style="margin: 16px 0; color: rgba(212,175,112,0.6); font-family: 'Inter', sans-serif; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;"></div>
+
+    <div class="founder-block">
+      <div class="founder-eyebrow">Founding Circle</div>
+      <p class="founder-text">
+        Acesso vitalício ao Método Espiral.<br>
+        25 vagas. Pagamento único.
+      </p>
+      <button class="btn btn-gold" onclick="goToKiwify()">Entrar — R$ 197</button>
+      <button class="btn-ghost" onclick="goToScreen(0)">Voltar ao início</button>
+    </div>
+  </div>
+
+  <!-- DOTS DE PROGRESSO (só aparecem nas telas 1-4) -->
+  <div class="progress-dots" id="dots" style="display: none;">
+    <div class="dot" data-step="1"></div>
+    <div class="dot" data-step="2"></div>
+    <div class="dot" data-step="3"></div>
+    <div class="dot" data-step="4"></div>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   SPIRAL MINUTE — Banco de Frases Curadas v1.0
+   30 frases · 5 estados · 6 frases por estado
+   ========================================================= */
+
+const PHRASES = {
+  cansado: [
+    "Talvez você esteja cansado de uma forma que dormir não resolve.",
+    "Cansaço também é informação. Não precisa ser resolvido agora, só reconhecido.",
+    "Você vem segurando há mais tempo do que percebeu. Faz sentido estar assim.",
+    "Talvez não seja preguiça. Talvez seja conta acumulada do corpo cobrando.",
+    "Descansar não é parar de produzir. É parar de fingir que tá tudo bem.",
+    "Você não precisa entender o cansaço agora. Só precisa parar de discutir com ele."
+  ],
+  ansioso: [
+    "A ansiedade costuma chegar antes de uma decisão que você tá adiando.",
+    "Talvez seu corpo esteja tentando te avisar de algo que sua cabeça ainda não quer ouvir.",
+    "Respira. Você não precisa decidir tudo nos próximos cinco minutos.",
+    "Ansiedade financeira raramente é sobre o valor exato. É sobre não saber onde começa a sair do controle.",
+    "Você tá tentando prever uma coisa que ainda não aconteceu. Volta pro que tá aqui.",
+    "Não precisa resolver a vida inteira hoje. Só precisa não fugir do próximo passo."
+  ],
+  disperso: [
+    "Talvez não seja falta de foco. Talvez sejam coisas demais pedindo atenção ao mesmo tempo.",
+    "Quando tudo parece urgente, normalmente nada é. Escolhe uma coisa.",
+    "Dispersão costuma ser sintoma. Geralmente de algo que você tá evitando olhar de frente.",
+    "Você não precisa fazer mais. Provavelmente precisa fazer menos, com mais presença.",
+    "Mente dispersa raramente se concentra sob pressão. Se concentra com respeito.",
+    "Talvez seja hora de fechar abas. Do navegador e da cabeça."
+  ],
+  sobrecarregado: [
+    "Você tá carregando coisa que não é sua. Vale a pena perceber qual.",
+    "Sobrecarga não é sinal de fraqueza. É sinal de que você tá tentando fazer demais sozinho.",
+    "Talvez o problema não seja a quantidade. Seja a falta de pausa entre uma coisa e outra.",
+    "Você não precisa dar conta de tudo. Precisa decidir o que solta primeiro.",
+    "Tem peso que é seu. Tem peso que você herdou. Saber a diferença muda tudo.",
+    "Quando o corpo trava, geralmente é porque a vida tá pedindo um corte que a cabeça ainda não autorizou."
+  ],
+  calmo: [
+    "Calma também é estado. Vale a pena notar, não só atravessar correndo.",
+    "Quando você tá calmo, decisões aparecem mais limpas. Aproveita o espaço.",
+    "Talvez esse seja o melhor momento pra escolher uma coisa pra fazer amanhã.",
+    "Calma não é ausência de problema. É espaço pra ver o problema sem reagir.",
+    "Esse estado é raro. Talvez valha sentar com ele por mais um minuto antes de seguir.",
+    "Você chegou aqui. Não precisa fazer nada agora. Já tá fazendo."
+  ]
+};
+
+const KIWIFY_URL = "https://pay.kiwify.com.br/Kd058ME";
+
+/* =========================================================
+   STORAGE
+   ========================================================= */
+
+const STORAGE_KEY = "spiral_data_v1";
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { sessions: 0, lastDate: null, lastState: null, lastAction: null };
+    return JSON.parse(raw);
+  } catch(e) {
+    return { sessions: 0, lastDate: null, lastState: null, lastAction: null };
+  }
+}
+
+function saveData(data) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch(e) { /* silent */ }
+}
+
+/* =========================================================
+   NAVEGAÇÃO ENTRE TELAS
+   ========================================================= */
+
+let currentScreen = 0;
+let currentState = null;
+
+function goToScreen(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + n).classList.add('active');
+  currentScreen = n;
+
+  // Mostra/esconde dots de progresso
+  const dots = document.getElementById('dots');
+  if (n >= 1 && n <= 4) {
+    dots.style.display = 'flex';
+    document.querySelectorAll('.dot').forEach(d => {
+      const step = parseInt(d.dataset.step);
+      d.classList.remove('active', 'completed');
+      if (step < n) d.classList.add('completed');
+      else if (step === n) d.classList.add('active');
+    });
+  } else {
+    dots.style.display = 'none';
+  }
+
+  // Comportamentos específicos por tela
+  if (n === 1) startBreathing();
+  if (n === 5) updateStreakDisplay();
+}
+
+/* =========================================================
+   RESPIRAÇÃO (TELA 1)
+   ========================================================= */
+
+let breathTimers = [];
+
+function clearBreath() {
+  breathTimers.forEach(t => clearTimeout(t));
+  breathTimers = [];
+}
+
+function startBreathing() {
+  clearBreath();
+  const text = document.getElementById('breathText');
+  const btn = document.getElementById('breathContinue');
+  btn.style.opacity = '0';
+  btn.style.pointerEvents = 'none';
+
+  const cycle = [
+    { msg: 'Inspira...', delay: 0 },
+    { msg: 'Solta...', delay: 4000 },
+    { msg: 'Inspira...', delay: 8000 },
+    { msg: 'Solta...', delay: 12000 },
+    { msg: '', delay: 16000 }
+  ];
+
+  cycle.forEach(c => {
+    breathTimers.push(setTimeout(() => {
+      text.style.opacity = '0';
+      setTimeout(() => {
+        text.textContent = c.msg;
+        text.style.opacity = '1';
+      }, 400);
+    }, c.delay));
+  });
+
+  // Mostra botão Continuar depois do segundo ciclo (~17s)
+  breathTimers.push(setTimeout(() => {
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+  }, 17000));
+}
+
+/* =========================================================
+   SELEÇÃO DE ESTADO (TELA 2 → 3)
+   ========================================================= */
+
+function selectState(state) {
+  currentState = state;
+  document.getElementById('stateCaption').textContent = state;
+  showRandomPhrase(state);
+  goToScreen(3);
+}
+
+function showRandomPhrase(state) {
+  const phrases = PHRASES[state];
+  const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+  const el = document.getElementById('curatedPhrase');
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.textContent = phrase;
+    el.style.opacity = '1';
+  }, 200);
+}
+
+function newPhrase() {
+  if (currentState) showRandomPhrase(currentState);
+}
+
+/* =========================================================
+   ENCERRAMENTO (TELA 4 → 5)
+   ========================================================= */
+
+function completeSession(silent) {
+  const data = loadData();
+  data.sessions = (data.sessions || 0) + 1;
+  data.lastDate = new Date().toISOString();
+  data.lastState = currentState;
+
+  if (!silent) {
+    const actionInput = document.getElementById('actionInput');
+    const action = actionInput.value.trim();
+    if (action) data.lastAction = action;
+  }
+
+  saveData(data);
+  goToScreen(5);
+}
+
+function updateStreakDisplay() {
+  const data = loadData();
+  const el = document.getElementById('streakDisplay');
+  if (data.sessions > 0) {
+    const label = data.sessions === 1 ? 'sessão' : 'sessões';
+    el.textContent = data.sessions + ' ' + label + ' · spiral';
+  } else {
+    el.textContent = '';
+  }
+}
+
+/* =========================================================
+   KIWIFY
+   ========================================================= */
+
+function goToKiwify() {
+  window.open(KIWIFY_URL, '_blank');
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Preview opcional: se já é founder (sessões > 5), poderia pular tela 0
+  // Por enquanto sempre começa do início
+  goToScreen(0);
+});
+
+// Permite reset via console (dev only)
+window.spiralReset = () => {
+  localStorage.removeItem(STORAGE_KEY);
+  console.log('Spiral data reset.');
+};
+</script>
+
+</body>
 </html>
